@@ -16,21 +16,18 @@
       <select id="filterPublication"><option value="all">Все публикации</option></select>
       <select id="filterStatus">
         <option value="all">Все статусы</option>
-        <option value="ожидает">Ожидает</option>
-        <option value="выполнен">Выполнен</option>
+        <option value="ожидает">ожидает</option>
+        <option value="выполнен">выполнен</option>
       </select>
       <button id="createCard">Создать карточку</button>
       <button id="exportJson">Экспорт JSON</button>
-
-      <!-- Импорт JSON как отдельная кнопка-лейбл, не перекрывает соседние -->
-      <label class="import-label" for="importJson">Импорт JSON</label>
+      <button id="importTrigger" type="button">Импорт JSON</button>
       <input type="file" id="importJson" accept="application/json" />
     </div>
   </header>
 
   <main id="cardsContainer"></main>
 
-  <!-- Модальное окно -->
   <div id="modal" class="modal hidden">
     <div class="modal-content">
       <h2 id="modalTitle">Создать карточку</h2>

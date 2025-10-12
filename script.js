@@ -6,6 +6,7 @@ const form = document.getElementById("cardForm");
 const createBtn = document.getElementById("createCard");
 const cancelBtn = document.getElementById("cancel");
 const exportBtn = document.getElementById("exportJson");
+const importTrigger = document.getElementById("importTrigger");
 const importInput = document.getElementById("importJson");
 
 const publicationsCatalog = [
@@ -18,7 +19,6 @@ const publicationsCatalog = [
   "Памятка"
 ];
 
-// месяцы в нижнем регистре
 const months = [
   "январь","февраль","март","апрель","май","июнь",
   "июль","август","сентябрь","октябрь","ноябрь","декабрь"
@@ -26,9 +26,13 @@ const months = [
 
 const years = [2025, 2026, 2027, 2028, 2029, 2030];
 
-// одна карточка = { year, month, name, publications[], status }
 let cards = JSON.parse(localStorage.getItem("cards")) || [];
 let editIndex = null;
+
+// Поднять импорт по клику на кнопку, не используя label
+importTrigger.addEventListener("click", () => {
+  importInput.click();
+});
 
 function populateSelects() {
   const yearSel = document.getElementById("year");
@@ -129,7 +133,7 @@ form.addEventListener("submit", (e) => {
     year: form.year.value,
     month: form.month.value,
     name: form.name.value.trim(),
-    publications: selectedPubliclications(selectedPublications),
+    publications: selectedPublications.filter(Boolean),
     status: form.status.value
   };
 
@@ -160,16 +164,15 @@ form.addEventListener("submit", (e) => {
   modal.classList.add("hidden");
 });
 
-// делегирование кликов по кнопкам внутри карточек
+// Делегирование кликов по кнопкам внутри карточек
 cardsContainer.addEventListener("click", (e) => {
   const target = e.target.closest("button");
   if (!target) return;
 
-  const idxAttr = target.getAttribute("data-index");
-  const i = idxAttr ? parseInt(idxAttr, 10) : -1;
+  const i = parseInt(target.getAttribute("data-index") || "-1", 10);
+  if (Number.isNaN(i) || i < 0) return;
 
   if (target.classList.contains("btn-edit")) {
-    // открыть модалку с данными карточки
     const c = cards[i];
     if (!c) return;
     modalTitle.textContent = "Редактировать карточку";
@@ -242,6 +245,7 @@ importInput.addEventListener("change", async (e) => {
     });
     cards = Object.values(grouped);
     saveCards();
+    // Сбросим фильтры, чтобы всё было видно
     document.getElementById("filterYear").value = "all";
     document.getElementById("filterMonth").value = "all";
     document.getElementById("filterPublication").value = "all";
@@ -254,11 +258,6 @@ importInput.addEventListener("change", async (e) => {
     e.target.value = "";
   }
 });
-
-// хелпер: нормализуем публикации (убираем пустые)
-function selectedPubliclications(list) {
-  return list.filter(Boolean);
-}
 
 // Первый рендер
 renderCards();

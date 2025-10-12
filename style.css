@@ -38,32 +38,24 @@ select, input, button {
   background: #fff;
 }
 
+/* Кнопки — единый стиль */
 button {
   background: #1976d2;
   color: white;
   border: none;
   cursor: pointer;
+  font-family: inherit;   /* тот же шрифт, что у экспорта */
+  font-size: 14px;
 }
 button:hover { background: #0d47a1; }
 
-/* Импорт JSON — синяя кнопка, input вынесен отдельно и не перекрывает соседей */
-.import-label {
-  display: inline-flex;
-  align-items: center;
-  gap: 6px;
-  background: #1976d2;
-  color: #fff;
-  border: none;
-  padding: 6px 10px;
-  border-radius: 5px;
-  cursor: pointer;
-}
+/* Скрытый input для импорта — не влияет на стиль кнопки */
 #importJson {
   position: absolute;
   width: 1px;
   height: 1px;
   opacity: 0;
-  pointer-events: auto;
+  pointer-events: none;
 }
 
 main {
