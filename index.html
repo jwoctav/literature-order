@@ -20,6 +20,11 @@
         <option value="выполнен">Выполнен</option>
       </select>
       <button id="createCard">Создать карточку</button>
+      <button id="exportJson">Экспорт JSON</button>
+      <label for="importJson" class="import-label">
+        Импорт JSON
+        <input type="file" id="importJson" accept="application/json" />
+      </label>
     </div>
   </header>
 
@@ -40,8 +45,7 @@
           <input type="text" id="name" name="name" required placeholder="Введите имя" />
         </label>
         <label>Публикации:
-          <!-- мультивыбор -->
-          <select id="publications" name="publications" multiple size="6" required></select>
+          <select id="publications" name="publications" multiple size="7" required></select>
         </label>
         <div class="hint">Удерживайте Ctrl (Windows) или ⌘ (Mac) для выбора нескольких публикаций.</div>
         <label>Статус:

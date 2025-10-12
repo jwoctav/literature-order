@@ -5,6 +5,8 @@ const modalTitle = document.getElementById("modalTitle");
 const form = document.getElementById("cardForm");
 const createBtn = document.getElementById("createCard");
 const cancelBtn = document.getElementById("cancel");
+const exportBtn = document.getElementById("exportJson");
+const importInput = document.getElementById("importJson");
 
 const publicationsCatalog = [
   "Рабочая тетрадь",
@@ -27,7 +29,6 @@ const years = [2025, 2026, 2027, 2028, 2029, 2030];
 let cards = JSON.parse(localStorage.getItem("cards")) || [];
 let editIndex = null;
 
-// Заполнение фильтров и формы
 function populateSelects() {
   const yearSel = document.getElementById("year");
   const monthSel = document.getElementById("month");
@@ -40,25 +41,26 @@ function populateSelects() {
   monthSel.innerHTML = "";
   pubsSel.innerHTML = "";
 
+  // Наполняем фильтры только новыми значениями
+  const ensureOption = (selectEl, value, label = value) => {
+    if (!Array.from(selectEl.options).some(o => o.value == value)) {
+      selectEl.innerHTML += `<option value="${value}">${label}</option>`;
+    }
+  };
+
   years.forEach(y => {
     yearSel.innerHTML += `<option value="${y}">${y}</option>`;
-    if (!Array.from(fYear.options).some(o => o.value == y)) {
-      fYear.innerHTML += `<option value="${y}">${y}</option>`;
-    }
+    ensureOption(fYear, y);
   });
 
   months.forEach(m => {
     monthSel.innerHTML += `<option value="${m}">${m}</option>`;
-    if (!Array.from(fMonth.options).some(o => o.value === m)) {
-      fMonth.innerHTML += `<option value="${m}">${m}</option>`;
-    }
+    ensureOption(fMonth, m);
   });
 
   publicationsCatalog.forEach(p => {
     pubsSel.innerHTML += `<option value="${p}">${p}</option>`;
-    if (!Array.from(fPub.options).some(o => o.value === p)) {
-      fPub.innerHTML += `<option value="${p}">${p}</option>`;
-    }
+    ensureOption(fPub, p);
   });
 
   const now = new Date();
@@ -187,4 +189,67 @@ function deleteCard(i) {
 document.querySelectorAll(".filters select")
   .forEach(f => f.addEventListener("change", renderCards));
 
+// Экспорт JSON: скачиваем cards как файл
+exportBtn.addEventListener("click", () => {
+  const blob = new Blob([JSON.stringify(cards, null, 2)], { type: "application/json" });
+  const url = URL.createObjectURL(blob);
+  const a = document.createElement("a");
+  a.href = url;
+  const stamp = new Date().toISOString().slice(0,19).replace(/[:T]/g, "-");
+  a.download = `literature-orders-${stamp}.json`;
+  document.body.appendChild(a);
+  a.click();
+  a.remove();
+  URL.revokeObjectURL(url);
+});
+
+// Импорт JSON: читаем файл и сохраняем в localStorage
+importInput.addEventListener("change", async (e) => {
+  const file = e.target.files?.[0];
+  if (!file) return;
+  try {
+    const text = await file.text();
+    const data = JSON.parse(text);
+
+    if (!Array.isArray(data)) {
+      alert("Неверный формат: ожидается массив карточек.");
+      importInput.value = "";
+      return;
+    }
+
+    // Нормализуем структуру и объединяем по ключу year|month|name
+    const grouped = {};
+    data.forEach(c => {
+      const year = String(c.year || "").trim();
+      const month = String(c.month || "").trim();
+      const name = String(c.name || "").trim();
+      const status = (c.status === "выполнен") ? "выполнен" : "ожидает";
+      const pubs = Array.isArray(c.publications) ? c.publications.filter(Boolean) : [];
+
+      if (!year || !month || !name) return;
+
+      const key = `${year}|${month}|${name}`;
+      if (!grouped[key]) {
+        grouped[key] = { year, month, name, publications: [], status };
+      }
+      pubs.forEach(p => {
+        if (!grouped[key].publications.includes(p)) grouped[key].publications.push(p);
+      });
+      if (grouped[key].status !== "выполнен" && status === "выполнен") {
+        grouped[key].status = "выполнен";
+      }
+    });
+
+    cards = Object.values(grouped);
+    saveCards();
+    renderCards();
+    importInput.value = "";
+    alert("Импорт завершён: данные обновлены.");
+  } catch (err) {
+    alert("Ошибка чтения файла JSON.");
+    importInput.value = "";
+  }
+});
+
+// Первый рендер
 renderCards();
