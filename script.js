@@ -150,7 +150,7 @@ form.addEventListener("submit", (e) => {
 
   const newCard = {
     year: form.year.value,
-    month: form.month.value,
+    month: form.month.value.toLowerCase(),
     name: form.name.value.trim(),
     publications: selectedPubliclications(selectedPublications),
     status: form.status.value.toLowerCase() === "выполнен" ? "выполнен" : "ожидает"
