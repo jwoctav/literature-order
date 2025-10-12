@@ -1,8 +1,15 @@
-/* style.css (до добавления PWA и последних правок) */
+/* style.css */
+*,
+*::before,
+*::after { box-sizing: border-box; }
+
+html, body { height: 100%; }
+
 body {
   font-family: system-ui, sans-serif;
   margin: 0;
   background: #f4f4f4;
+  color: #222;
 }
 
 header {
@@ -11,6 +18,8 @@ header {
   padding: 1rem;
   text-align: center;
 }
+
+h1 { margin: 0; font-size: 1.4rem; }
 
 .filters {
   margin-top: 1rem;
@@ -25,6 +34,7 @@ select, input, button {
   font-size: 14px;
   border-radius: 5px;
   border: 1px solid #ccc;
+  background: #fff;
 }
 
 button {
@@ -34,9 +44,7 @@ button {
   cursor: pointer;
 }
 
-button:hover {
-  background: #0d47a1;
-}
+button:hover { background: #0d47a1; }
 
 main {
   display: flex;
@@ -51,17 +59,20 @@ main {
   border-radius: 8px;
   padding: 15px;
   box-shadow: 0 2px 6px rgba(0,0,0,0.1);
-  width: 250px;
+  width: 280px;
 }
 
 .card h3 {
   margin-top: 0;
   color: #1565c0;
+  overflow-wrap: anywhere;
+  word-break: break-word;
 }
 
-.card p {
-  margin: 4px 0;
-}
+.card p { margin: 4px 0; overflow-wrap: anywhere; word-break: break-word; }
+
+.card .pub-list { margin: 8px 0 0; padding-left: 18px; }
+.card .pub-list li { margin: 2px 0; }
 
 .card .actions {
   margin-top: 10px;
@@ -73,34 +84,30 @@ main {
   position: fixed;
   inset: 0;
   background: rgba(0,0,0,0.5);
-  display: flex;
+  display: none;
   align-items: center;
   justify-content: center;
+  padding: 20px;
 }
 
-.hidden {
-  display: none;
-}
+.modal:not(.hidden) { display: flex; }
+.hidden { display: none !important; }
 
 .modal-content {
   background: white;
   padding: 20px;
   border-radius: 10px;
-  width: 300px;
+  width: 330px;
+  max-width: 90vw;
 }
 
-.modal-content label {
-  display: block;
-  margin-bottom: 10px;
-}
+.modal-content label { display: block; margin-bottom: 10px; }
+.modal-content input, .modal-content select { width: 100%; margin-top: 4px; }
 
-.modal-content input, .modal-content select {
-  width: 100%;
-  margin-top: 4px;
-}
+.hint { font-size: 12px; color: #555; margin-top: 6px; }
 
-.buttons {
-  display: flex;
-  justify-content: space-between;
-  margin-top: 15px;
+.buttons { display: flex; justify-content: space-between; margin-top: 15px; }
+
+@media (max-width: 480px) {
+  .card { width: calc(100vw - 40px); }
 }

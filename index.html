@@ -1,9 +1,9 @@
-<!-- index.html (до добавления PWA) -->
+<!-- index.html -->
 <!DOCTYPE html>
 <html lang="ru">
 <head>
   <meta charset="UTF-8" />
-  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <meta name="viewport" content="width=device-width, initial-scale=1" />
   <title>Учёт заказов литературы</title>
   <link rel="stylesheet" href="style.css" />
 </head>
@@ -11,15 +11,9 @@
   <header>
     <h1>Учёт заказов литературы</h1>
     <div class="filters">
-      <select id="filterYear">
-        <option value="all">Все годы</option>
-      </select>
-      <select id="filterMonth">
-        <option value="all">Все месяцы</option>
-      </select>
-      <select id="filterPublication">
-        <option value="all">Все публикации</option>
-      </select>
+      <select id="filterYear"><option value="all">Все годы</option></select>
+      <select id="filterMonth"><option value="all">Все месяцы</option></select>
+      <select id="filterPublication"><option value="all">Все публикации</option></select>
       <select id="filterStatus">
         <option value="all">Все статусы</option>
         <option value="ожидает">Ожидает</option>
@@ -37,19 +31,21 @@
       <h2 id="modalTitle">Создать карточку</h2>
       <form id="cardForm">
         <label>Год:
-          <select id="year" required></select>
+          <select id="year" name="year" required></select>
         </label>
         <label>Месяц:
-          <select id="month" required></select>
+          <select id="month" name="month" required></select>
         </label>
         <label>Имя:
-          <input type="text" id="name" required placeholder="Введите имя" />
+          <input type="text" id="name" name="name" required placeholder="Введите имя" />
         </label>
         <label>Публикации:
-          <select id="publication" required></select>
+          <!-- мультивыбор -->
+          <select id="publications" name="publications" multiple size="6" required></select>
         </label>
+        <div class="hint">Удерживайте Ctrl (Windows) или ⌘ (Mac) для выбора нескольких публикаций.</div>
         <label>Статус:
-          <select id="status" required>
+          <select id="status" name="status" required>
             <option value="ожидает">Ожидает</option>
             <option value="выполнен">Выполнен</option>
           </select>
