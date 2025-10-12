@@ -27,9 +27,10 @@ h1 { margin: 0; font-size: 1.4rem; }
   justify-content: center;
   gap: 10px;
   flex-wrap: wrap;
+  align-items: center;
 }
 
-select, input, button, .import-label {
+select, input, button {
   padding: 6px 10px;
   font-size: 14px;
   border-radius: 5px;
@@ -43,22 +44,26 @@ button {
   border: none;
   cursor: pointer;
 }
-
 button:hover { background: #0d47a1; }
 
-/* Импорт JSON как стилизованный label */
+/* Импорт JSON — синяя кнопка, input вынесен отдельно и не перекрывает соседей */
 .import-label {
-  position: relative;
-  cursor: pointer;
   display: inline-flex;
   align-items: center;
   gap: 6px;
-}
-.import-label input[type="file"] {
-  position: absolute;
-  inset: 0;
-  opacity: 0;
+  background: #1976d2;
+  color: #fff;
+  border: none;
+  padding: 6px 10px;
+  border-radius: 5px;
   cursor: pointer;
+}
+#importJson {
+  position: absolute;
+  width: 1px;
+  height: 1px;
+  opacity: 0;
+  pointer-events: auto;
 }
 
 main {
@@ -77,9 +82,10 @@ main {
   width: 280px;
 }
 
+/* ФИО — фиолетовый */
 .card h3 {
   margin-top: 0;
-  color: #1565c0;
+  color: #6a1b9a;
   overflow-wrap: anywhere;
   word-break: break-word;
 }
@@ -92,8 +98,23 @@ main {
 .card .actions {
   margin-top: 10px;
   display: flex;
-  justify-content: space-between;
+  gap: 8px;
 }
+
+/* Кнопки действий с отдельными классами */
+.btn-edit {
+  background: #2e7d32; /* зелёный */
+  color: #fff;
+  border: none;
+}
+.btn-edit:hover { background: #1b5e20; }
+
+.btn-delete {
+  background: #c62828; /* красный */
+  color: #fff;
+  border: none;
+}
+.btn-delete:hover { background: #8e0000; }
 
 .modal {
   position: fixed;

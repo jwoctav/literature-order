@@ -18,14 +18,15 @@ const publicationsCatalog = [
   "Памятка"
 ];
 
+// месяцы в нижнем регистре
 const months = [
-  "Январь","Февраль","Март","Апрель","Май","Июнь",
-  "Июль","Август","Сентябрь","Октябрь","Ноябрь","Декабрь"
+  "январь","февраль","март","апрель","май","июнь",
+  "июль","август","сентябрь","октябрь","ноябрь","декабрь"
 ];
 
 const years = [2025, 2026, 2027, 2028, 2029, 2030];
 
-// Одна карточка = { year, month, name, publications[], status }
+// одна карточка = { year, month, name, publications[], status }
 let cards = JSON.parse(localStorage.getItem("cards")) || [];
 let editIndex = null;
 
@@ -41,7 +42,6 @@ function populateSelects() {
   monthSel.innerHTML = "";
   pubsSel.innerHTML = "";
 
-  // Наполняем фильтры только новыми значениями
   const ensureOption = (selectEl, value, label = value) => {
     if (!Array.from(selectEl.options).some(o => o.value == value)) {
       selectEl.innerHTML += `<option value="${value}">${label}</option>`;
@@ -101,25 +101,25 @@ function renderCards() {
         <p><b>Публикации:</b></p>
         <ul class="pub-list">${pubsHtml}</ul>
         <div class="actions">
-          <button onclick="editCard(${i})" title="Редактировать">✏️</button>
-          <button onclick="deleteCard(${i})" title="Удалить">🗑️</button>
+          <button class="btn-edit" data-index="${i}" aria-label="Редактировать" title="Редактировать">✏️</button>
+          <button class="btn-delete" data-index="${i}" aria-label="Удалить" title="Удалить">🗑️</button>
         </div>
       `;
       cardsContainer.appendChild(div);
     });
 }
 
-createBtn.onclick = () => {
+createBtn.addEventListener("click", () => {
   modalTitle.textContent = "Создать карточку";
   form.reset();
   populateSelects();
   editIndex = null;
   modal.classList.remove("hidden");
-};
+});
 
-cancelBtn.onclick = () => modal.classList.add("hidden");
+cancelBtn.addEventListener("click", () => modal.classList.add("hidden"));
 
-form.onsubmit = (e) => {
+form.addEventListener("submit", (e) => {
   e.preventDefault();
 
   const pubsSel = document.getElementById("publications");
@@ -129,7 +129,7 @@ form.onsubmit = (e) => {
     year: form.year.value,
     month: form.month.value,
     name: form.name.value.trim(),
-    publications: selectedPublications,
+    publications: selectedPubliclications(selectedPublications),
     status: form.status.value
   };
 
@@ -145,7 +145,6 @@ form.onsubmit = (e) => {
   if (editIndex !== null) {
     cards[editIndex] = newCard;
   } else {
-    // Уникальность по year+month+name: объединяем публикации
     const existsIndex = cards.findIndex(c => c.year == newCard.year && c.month === newCard.month && c.name === newCard.name);
     if (existsIndex >= 0) {
       const existing = cards[existsIndex];
@@ -159,37 +158,50 @@ form.onsubmit = (e) => {
   saveCards();
   renderCards();
   modal.classList.add("hidden");
-};
+});
 
-function editCard(i) {
-  const c = cards[i];
-  modalTitle.textContent = "Редактировать карточку";
-  form.year.value = c.year;
-  form.month.value = c.month;
-  form.name.value = c.name;
-  form.status.value = c.status;
+// делегирование кликов по кнопкам внутри карточек
+cardsContainer.addEventListener("click", (e) => {
+  const target = e.target.closest("button");
+  if (!target) return;
 
-  const pubsSel = document.getElementById("publications");
-  Array.from(pubsSel.options).forEach(opt => {
-    opt.selected = Array.isArray(c.publications) && c.publications.includes(opt.value);
-  });
+  const idxAttr = target.getAttribute("data-index");
+  const i = idxAttr ? parseInt(idxAttr, 10) : -1;
 
-  editIndex = i;
-  modal.classList.remove("hidden");
-}
+  if (target.classList.contains("btn-edit")) {
+    // открыть модалку с данными карточки
+    const c = cards[i];
+    if (!c) return;
+    modalTitle.textContent = "Редактировать карточку";
+    form.year.value = c.year;
+    form.month.value = c.month;
+    form.name.value = c.name;
+    form.status.value = c.status;
 
-function deleteCard(i) {
-  if (confirm("Удалить карточку?")) {
-    cards.splice(i, 1);
-    saveCards();
-    renderCards();
+    const pubsSel = document.getElementById("publications");
+    Array.from(pubsSel.options).forEach(opt => {
+      opt.selected = Array.isArray(c.publications) && c.publications.includes(opt.value);
+    });
+
+    editIndex = i;
+    modal.classList.remove("hidden");
+    e.preventDefault();
+    e.stopPropagation();
+    return;
   }
-}
 
-document.querySelectorAll(".filters select")
-  .forEach(f => f.addEventListener("change", renderCards));
+  if (target.classList.contains("btn-delete")) {
+    if (confirm("Удалить карточку?")) {
+      cards.splice(i, 1);
+      saveCards();
+      renderCards();
+    }
+    e.preventDefault();
+    e.stopPropagation();
+  }
+});
 
-// Экспорт JSON: скачиваем cards как файл
+// Экспорт JSON
 exportBtn.addEventListener("click", () => {
   const blob = new Blob([JSON.stringify(cards, null, 2)], { type: "application/json" });
   const url = URL.createObjectURL(blob);
@@ -203,21 +215,18 @@ exportBtn.addEventListener("click", () => {
   URL.revokeObjectURL(url);
 });
 
-// Импорт JSON: читаем файл и сохраняем в localStorage
+// Импорт JSON
 importInput.addEventListener("change", async (e) => {
   const file = e.target.files?.[0];
   if (!file) return;
   try {
     const text = await file.text();
     const data = JSON.parse(text);
-
     if (!Array.isArray(data)) {
       alert("Неверный формат: ожидается массив карточек.");
-      importInput.value = "";
+      e.target.value = "";
       return;
     }
-
-    // Нормализуем структуру и объединяем по ключу year|month|name
     const grouped = {};
     data.forEach(c => {
       const year = String(c.year || "").trim();
@@ -225,31 +234,31 @@ importInput.addEventListener("change", async (e) => {
       const name = String(c.name || "").trim();
       const status = (c.status === "выполнен") ? "выполнен" : "ожидает";
       const pubs = Array.isArray(c.publications) ? c.publications.filter(Boolean) : [];
-
       if (!year || !month || !name) return;
-
       const key = `${year}|${month}|${name}`;
-      if (!grouped[key]) {
-        grouped[key] = { year, month, name, publications: [], status };
-      }
-      pubs.forEach(p => {
-        if (!grouped[key].publications.includes(p)) grouped[key].publications.push(p);
-      });
-      if (grouped[key].status !== "выполнен" && status === "выполнен") {
-        grouped[key].status = "выполнен";
-      }
+      if (!grouped[key]) grouped[key] = { year, month, name, publications: [], status };
+      pubs.forEach(p => { if (!grouped[key].publications.includes(p)) grouped[key].publications.push(p); });
+      if (grouped[key].status !== "выполнен" && status === "выполнен") grouped[key].status = "выполнен";
     });
-
     cards = Object.values(grouped);
     saveCards();
+    document.getElementById("filterYear").value = "all";
+    document.getElementById("filterMonth").value = "all";
+    document.getElementById("filterPublication").value = "all";
+    document.getElementById("filterStatus").value = "all";
     renderCards();
-    importInput.value = "";
+    e.target.value = "";
     alert("Импорт завершён: данные обновлены.");
   } catch (err) {
     alert("Ошибка чтения файла JSON.");
-    importInput.value = "";
+    e.target.value = "";
   }
 });
+
+// хелпер: нормализуем публикации (убираем пустые)
+function selectedPubliclications(list) {
+  return list.filter(Boolean);
+}
 
 // Первый рендер
 renderCards();

@@ -21,8 +21,10 @@
       </select>
       <button id="createCard">Создать карточку</button>
       <button id="exportJson">Экспорт JSON</button>
-      <button id="importJsonBtn">Импорт JSON</button>
-			<input type="file" id="importJson" accept="application/json" style="display:none" />
+
+      <!-- Импорт JSON как отдельная кнопка-лейбл, не перекрывает соседние -->
+      <label class="import-label" for="importJson">Импорт JSON</label>
+      <input type="file" id="importJson" accept="application/json" />
     </div>
   </header>
 
