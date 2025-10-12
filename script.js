@@ -30,10 +30,7 @@ const years = [2025, 2026, 2027, 2028, 2029, 2030];
 let cards = JSON.parse(localStorage.getItem("cards")) || [];
 let editIndex = null;
 
-// Поднять импорт по клику на кнопку, не используя label
-importTrigger.addEventListener("click", () => {
-  importInput.click();
-});
+importTrigger.addEventListener("click", () => importInput.click());
 
 function populateSelects() {
   const yearSel = document.getElementById("year");
@@ -97,19 +94,40 @@ function renderCards() {
     .forEach((card, i) => {
       const div = document.createElement("div");
       div.className = "card";
-      const pubsHtml = (card.publications || []).map(p => `<li>${p}</li>`).join("");
-      div.innerHTML = `
+
+      // Верх карточки: ФИО + кнопка редактирования справа
+      const header = document.createElement("div");
+      header.className = "card-header";
+      header.innerHTML = `
         <h3>${card.name}</h3>
+        <button class="btn-edit-top" data-index="${i}" aria-label="Редактировать" title="Редактировать">✏️</button>
+      `;
+      div.appendChild(header);
+
+      // Остальные поля
+      div.insertAdjacentHTML("beforeend", `
         <p><b>Год:</b> ${card.year}</p>
         <p><b>Месяц:</b> ${card.month}</p>
         <p><b>Статус:</b> ${card.status}</p>
-        <p><b>Публикации:</b></p>
-        <ul class="pub-list">${pubsHtml}</ul>
-        <div class="actions">
-          <button class="btn-edit" data-index="${i}" aria-label="Редактировать" title="Редактировать">✏️</button>
-          <button class="btn-delete" data-index="${i}" aria-label="Удалить" title="Удалить">🗑️</button>
-        </div>
+      `);
+
+      // Список публикаций в рамке
+      const pubBox = document.createElement("div");
+      pubBox.className = "pub-box";
+      pubBox.innerHTML = `
+        <p class="pub-box-title">Публикации:</p>
+        <ul class="pub-list">${(card.publications || []).map(p => `<li>${p}</li>`).join("")}</ul>
       `;
+      div.appendChild(pubBox);
+
+      // Нижняя панель: удалить справа внизу
+      const actionsBottom = document.createElement("div");
+      actionsBottom.className = "card-actions-bottom";
+      actionsBottom.innerHTML = `
+        <button class="btn-delete-bottom" data-index="${i}" aria-label="Удалить" title="Удалить">🗑️ Удалить</button>
+      `;
+      div.appendChild(actionsBottom);
+
       cardsContainer.appendChild(div);
     });
 }
@@ -134,8 +152,8 @@ form.addEventListener("submit", (e) => {
     year: form.year.value,
     month: form.month.value,
     name: form.name.value.trim(),
-    publications: selectedPublications.filter(Boolean),
-    status: form.status.value
+    publications: selectedPubliclications(selectedPublications),
+    status: form.status.value.toLowerCase() === "выполнен" ? "выполнен" : "ожидает"
   };
 
   if (!newCard.name) {
@@ -165,15 +183,14 @@ form.addEventListener("submit", (e) => {
   modal.classList.add("hidden");
 });
 
-// Делегирование кликов по кнопкам внутри карточек
+// Делегирование: редактировать и удалить
 cardsContainer.addEventListener("click", (e) => {
-  const target = e.target.closest("button");
-  if (!target) return;
-
-  const i = parseInt(target.getAttribute("data-index") || "-1", 10);
+  const btn = e.target.closest("button");
+  if (!btn) return;
+  const i = parseInt(btn.getAttribute("data-index") || "-1", 10);
   if (Number.isNaN(i) || i < 0) return;
 
-  if (target.classList.contains("btn-edit")) {
+  if (btn.classList.contains("btn-edit-top")) {
     const c = cards[i];
     if (!c) return;
     modalTitle.textContent = "Редактировать карточку";
@@ -194,7 +211,7 @@ cardsContainer.addEventListener("click", (e) => {
     return;
   }
 
-  if (target.classList.contains("btn-delete")) {
+  if (btn.classList.contains("btn-delete-bottom")) {
     if (confirm("Удалить карточку?")) {
       cards.splice(i, 1);
       saveCards();
@@ -236,7 +253,7 @@ importInput.addEventListener("change", async (e) => {
       const year = String(c.year || "").trim();
       const month = String(c.month || "").trim();
       const name = String(c.name || "").trim();
-      const status = (c.status === "выполнен") ? "выполнен" : "ожидает";
+      const status = (String(c.status || "").toLowerCase() === "выполнен") ? "выполнен" : "ожидает";
       const pubs = Array.isArray(c.publications) ? c.publications.filter(Boolean) : [];
       if (!year || !month || !name) return;
       const key = `${year}|${month}|${name}`;
@@ -246,7 +263,6 @@ importInput.addEventListener("change", async (e) => {
     });
     cards = Object.values(grouped);
     saveCards();
-    // Сбросим фильтры, чтобы всё было видно
     document.getElementById("filterYear").value = "all";
     document.getElementById("filterMonth").value = "all";
     document.getElementById("filterPublication").value = "all";
@@ -260,5 +276,9 @@ importInput.addEventListener("change", async (e) => {
   }
 });
 
-// Первый рендер
+// helper
+function selectedPubliclications(list) {
+  return list.filter(Boolean);
+}
+
 renderCards();
