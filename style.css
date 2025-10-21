@@ -177,6 +177,15 @@ main {
   max-width: 90vw;
 }
 
+/* Цвета для статусов */
+.status-ожидает {
+  background-color: khaki;
+}
+
+.status-выполнен {
+  background-color: lightgreen;
+}
+
 .modal-content label { display: block; margin-bottom: 10px; }
 .modal-content input, .modal-content select { width: 100%; margin-top: 4px; }
 

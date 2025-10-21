@@ -1,4 +1,3 @@
-// script.js
 const cardsContainer = document.getElementById("cardsContainer");
 const modal = document.getElementById("modal");
 const modalTitle = document.getElementById("modalTitle");
@@ -77,6 +76,16 @@ function saveCards() {
   localStorage.setItem("cards", JSON.stringify(cards));
 }
 
+// ===== ФУНКЦИЯ ОКРАШИВАНИЯ СТАТУСА =====
+function setStatusColor(el, status) {
+  el.classList.remove("status-ожидает", "status-выполнен");
+  if (status === "ожидает") {
+    el.classList.add("status-ожидает");
+  } else if (status === "выполнен") {
+    el.classList.add("status-выполнен");
+  }
+}
+
 function renderCards() {
   cardsContainer.innerHTML = "";
   const fy = document.getElementById("filterYear").value;
@@ -95,7 +104,7 @@ function renderCards() {
       const div = document.createElement("div");
       div.className = "card";
 
-      // Верх карточки: ФИО + кнопка редактирования справа
+      // Верх карточки
       const header = document.createElement("div");
       header.className = "card-header";
       header.innerHTML = `
@@ -105,13 +114,36 @@ function renderCards() {
       div.appendChild(header);
 
       // Остальные поля
-      div.insertAdjacentHTML("beforeend", `
-        <p><b>Год:</b> ${card.year}</p>
-        <p><b>Месяц:</b> ${card.month}</p>
-        <p><b>Статус:</b> ${card.status}</p>
-      `);
+      const yearP = document.createElement("p");
+      yearP.innerHTML = `<b>Год:</b> ${card.year}`;
 
-      // Список публикаций в рамке
+      const monthP = document.createElement("p");
+      monthP.innerHTML = `<b>Месяц:</b> ${card.month}`;
+
+      // Выпадающий список для статуса
+      const statusWrapper = document.createElement("p");
+      statusWrapper.innerHTML = `<b>Статус:</b> `;
+      const statusSelect = document.createElement("select");
+      statusSelect.innerHTML = `
+        <option value="ожидает" ${card.status === "ожидает" ? "selected" : ""}>ожидает</option>
+        <option value="выполнен" ${card.status === "выполнен" ? "selected" : ""}>выполнен</option>
+      `;
+      statusWrapper.appendChild(statusSelect);
+
+      // Окрашивание
+      setStatusColor(statusSelect, card.status);
+
+      // Слушатель на изменение
+      statusSelect.addEventListener("change", () => {
+        card.status = statusSelect.value;
+        setStatusColor(statusSelect, card.status);
+        saveCards();
+      });
+
+      // Добавляем всё в карточку
+      div.append(yearP, monthP, statusWrapper);
+
+      // Публикации
       const pubBox = document.createElement("div");
       pubBox.className = "pub-box";
       pubBox.innerHTML = `
@@ -120,7 +152,7 @@ function renderCards() {
       `;
       div.appendChild(pubBox);
 
-      // Нижняя панель: удалить справа внизу
+      // Удаление
       const actionsBottom = document.createElement("div");
       actionsBottom.className = "card-actions-bottom";
       actionsBottom.innerHTML = `
@@ -138,6 +170,11 @@ createBtn.addEventListener("click", () => {
   populateSelects();
   editIndex = null;
   modal.classList.remove("hidden");
+
+  // Цвет в форме при открытии
+  const statusField = document.getElementById("status");
+  setStatusColor(statusField, statusField.value);
+  statusField.addEventListener("change", () => setStatusColor(statusField, statusField.value));
 });
 
 cancelBtn.addEventListener("click", () => modal.classList.add("hidden"));
@@ -183,7 +220,7 @@ form.addEventListener("submit", (e) => {
   modal.classList.add("hidden");
 });
 
-// Делегирование: редактировать и удалить
+// Делегирование
 cardsContainer.addEventListener("click", (e) => {
   const btn = e.target.closest("button");
   if (!btn) return;
@@ -203,6 +240,11 @@ cardsContainer.addEventListener("click", (e) => {
     Array.from(pubsSel.options).forEach(opt => {
       opt.selected = Array.isArray(c.publications) && c.publications.includes(opt.value);
     });
+
+    // Обновляем цвет в форме при редактировании
+    const statusField = document.getElementById("status");
+    setStatusColor(statusField, statusField.value);
+    statusField.addEventListener("change", () => setStatusColor(statusField, statusField.value));
 
     editIndex = i;
     modal.classList.remove("hidden");
