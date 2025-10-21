@@ -129,13 +129,11 @@ function renderCards() {
       const div = document.createElement("div");
       div.className = "card";
 
-      // --- Верх карточки (только ФИО) ---
       const header = document.createElement("div");
       header.className = "card-header";
-      header.innerHTML = `<h3>${card.name}</h3>`; // Убрана кнопка редактирования отсюда
+      header.innerHTML = `<h3>${card.name}</h3>`;
       div.appendChild(header);
 
-      // --- Блок "Месяц Год" и "Статус" ---
       const metaDiv = document.createElement("div");
       metaDiv.className = "card-meta";
       const dateP = document.createElement("p");
@@ -156,16 +154,15 @@ function renderCards() {
       metaDiv.append(dateP, statusWrapper);
       div.appendChild(metaDiv);
 
-      // --- Публикации ---
+      // --- ИЗМЕНЕНИЕ ЗДЕСЬ ---
       const pubBox = document.createElement("div");
       pubBox.className = "pub-box";
+      // Строка с заголовком <p class="pub-box-title">Публикации:</p> была удалена
       pubBox.innerHTML = `
-        <p class="pub-box-title">Публикации:</p>
         <ul class="pub-list">${(card.publications || []).map(p => `<li>${p}</li>`).join("")}</ul>
       `;
       div.appendChild(pubBox);
 
-      // --- Нижняя панель с кнопками "Удалить" и "Редактировать" ---
       const actionsBottom = document.createElement("div");
       actionsBottom.className = "card-actions-bottom";
       actionsBottom.innerHTML = `
@@ -230,7 +227,6 @@ form.addEventListener("submit", (e) => {
   modal.classList.add("hidden");
 });
 
-// Обработчик кликов теперь ищет .btn-edit-bottom
 cardsContainer.addEventListener("click", (e) => {
   const btn = e.target.closest("button");
   if (!btn) return;
