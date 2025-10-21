@@ -75,6 +75,14 @@ function populateSelects() {
 }
 populateSelects();
 
+// ===== ДОБАВЛЕННЫЙ КОД НАЧАЛО =====
+// Слушатели для фильтров
+document.getElementById("filterYear").addEventListener("change", renderCards);
+document.getElementById("filterMonth").addEventListener("change", renderCards);
+document.getElementById("filterPublication").addEventListener("change", renderCards);
+document.getElementById("filterStatus").addEventListener("change", renderCards);
+// ===== ДОБАВЛЕННЫЙ КОД КОНЕЦ =====
+
 function saveCards() {
   localStorage.setItem("cards", JSON.stringify(cards));
 }
