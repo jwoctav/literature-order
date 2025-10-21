@@ -43,6 +43,7 @@ h1 {
   max-width: 500px;
 }
 
+/* Применяем выравнивание только для экранов шире 520px */
 @media (min-width: 520px) {
   .filter-row {
     justify-content: space-between;
@@ -71,9 +72,7 @@ select, input, button {
   background: #fff;
 }
 
-.filter-row select {
-    flex-basis: 150px;
-}
+/* ПРАВИЛО flex-basis УДАЛЕНО, ЧТОБЫ НЕ МЕШАТЬ ВЫРАВНИВАНИЮ */
 
 button {
   background: #1976d2;
@@ -93,14 +92,13 @@ button:hover { background: #0d47a1; }
   pointer-events: none;
 }
 
-/* === ИЗМЕНЕНИЯ ЗДЕСЬ === */
 #createCard {
-  background: #3498db; /* Новый светло-синий цвет */
+  background: #3498db;
   color: #fff;
   border: none;
 }
 #createCard:hover {
-  background: #2980b9; /* Более темный синий при наведении */
+  background: #2980b9;
 }
 
 main {
@@ -157,11 +155,6 @@ main {
   padding: 8px;
   margin-top: 8px;
   flex-grow: 1;
-}
-.pub-box-title {
-  margin: 0 0 6px 0;
-  font-weight: 600;
-  color: #333;
 }
 .card .pub-list {
   margin: 0;
