@@ -33,23 +33,20 @@ h1 {
   flex-direction: column;
   align-items: center;
   gap: 10px;
+  width: 100%;
+  padding: 0 1rem; /* Добавляем боковые отступы для всего блока фильтров */
 }
 
 .filter-row {
   display: flex;
+  flex-wrap: wrap; /* Позволяем перенос на очень узких экранах */
   justify-content: center;
   gap: 10px;
   width: 100%;
   max-width: 500px;
 }
 
-/* Применяем выравнивание только для экранов шире 520px */
-@media (min-width: 520px) {
-  .filter-row {
-    justify-content: space-between;
-    gap: 0;
-  }
-}
+/* Медиа-запрос был удален, чтобы обеспечить одинаковое поведение */
 
 .action-btn {
   background: rgba(255, 255, 255, 0.2);
@@ -71,8 +68,6 @@ select, input, button {
   border: 1px solid #ccc;
   background: #fff;
 }
-
-/* ПРАВИЛО flex-basis УДАЛЕНО, ЧТОБЫ НЕ МЕШАТЬ ВЫРАВНИВАНИЮ */
 
 button {
   background: #1976d2;
