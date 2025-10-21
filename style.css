@@ -8,17 +8,15 @@ html, body { height: 100%; }
 body {
   font-family: system-ui, sans-serif;
   margin: 0;
-  background: #f4f4f4;
+  background: #333; /* ИЗМЕНЕН ЦВЕТ ФОНА */
   color: #222;
 }
 
-/* === ИЗМЕНЕНИЯ В HEADER === */
 header {
   background: #8e44ad;
   color: white;
   padding: 1rem;
   text-align: center;
-  /* Добавляем flexbox для расположения кнопок по бокам */
   display: flex;
   align-items: center;
   justify-content: space-between;
@@ -29,23 +27,19 @@ header {
   flex-direction: column;
   align-items: center;
 }
-/* === КОНЕЦ ИЗМЕНЕНИЙ В HEADER === */
 
-
-/* === НОВЫЕ СТИЛИ ДЛЯ КНОПОК-ИКОНОК === */
 .header-action-btn {
-  background: rgba(255, 255, 255, 0.2); /* полупрозрачный фон */
+  background: rgba(255, 255, 255, 0.2);
   border: 1px solid white;
   width: 40px;
   height: 40px;
-  border-radius: 50%; /* делаем круглыми */
-  font-size: 20px; /* увеличиваем иконку */
-  flex-shrink: 0; /* чтобы кнопки не сжимались */
+  border-radius: 50%;
+  font-size: 20px;
+  flex-shrink: 0;
 }
 .header-action-btn:hover {
   background: rgba(255, 255, 255, 0.4);
 }
-/* === КОНЕЦ НОВЫХ СТИЛЕЙ === */
 
 h1 {
   margin: 0;
@@ -118,9 +112,10 @@ main {
 .card {
   background: white;
   border-radius: 8px;
-  padding: 12px 12px 14px;
+  padding: 12px;
   box-shadow: 0 2px 6px rgba(0,0,0,0.1);
-  position: relative;
+  display: flex; /* Используем flexbox для управления дочерними элементами */
+  flex-direction: column;
 }
 
 .card-header {
@@ -141,21 +136,19 @@ main {
   text-overflow: ellipsis;
 }
 
-.btn-edit-top {
-  background: #2e7d32;
-  color: #fff;
-  border: none;
-  padding: 6px 8px;
-  border-radius: 5px;
-  cursor: pointer;
+/* НОВЫЙ КОНТЕЙНЕР ДЛЯ ДАТЫ И СТАТУСА */
+.card-meta {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  margin: 6px 0;
+  font-size: 14px;
 }
-.btn-edit-top:hover { background: #1b5e20; }
 
 .card p {
-  margin: 6px 0;
+  margin: 0; /* Убираем лишние отступы у параграфов */
   overflow-wrap: anywhere;
   word-break: break-word;
-  font-size: 14px;
 }
 
 .pub-box {
@@ -163,6 +156,7 @@ main {
   border-radius: 6px;
   padding: 8px;
   margin-top: 8px;
+  flex-grow: 1; /* Позволяем блоку публикаций растягиваться */
 }
 .pub-box-title {
   margin: 0 0 6px 0;
@@ -177,21 +171,35 @@ main {
   margin: 2px 0;
 }
 
+/* ИЗМЕНЕНИЯ В ПАНЕЛИ ДЕЙСТВИЙ */
 .card-actions-bottom {
   display: flex;
-  justify-content: flex-end;
+  justify-content: space-between; /* Расставляем кнопки по краям */
+  align-items: center;
   margin-top: 10px;
 }
 
 .btn-delete-bottom {
-  background: #c62828;
+  background: #f44336; /* НОВЫЙ СВЕТЛЫЙ КРАСНЫЙ */
   color: #fff;
   border: none;
   padding: 6px 10px;
   border-radius: 5px;
   cursor: pointer;
 }
-.btn-delete-bottom:hover { background: #8e0000; }
+.btn-delete-bottom:hover { background: #e53935; }
+
+/* НОВЫЙ СТИЛЬ ДЛЯ КНОПКИ РЕДАКТИРОВАНИЯ */
+.btn-edit-bottom {
+  background: #4CAF50; /* НОВЫЙ СВЕТЛЫЙ ЗЕЛЕНЫЙ */
+  color: #fff;
+  border: none;
+  padding: 6px 10px;
+  border-radius: 5px;
+  cursor: pointer;
+}
+.btn-edit-bottom:hover { background: #45a049; }
+
 
 .modal {
   position: fixed;
@@ -233,7 +241,6 @@ main {
 #cancel:hover {
   background-color: #666666;
 }
-
 
 @media (max-width: 480px) {
   main { grid-template-columns: 1fr; }
