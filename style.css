@@ -27,26 +27,37 @@ h1 {
   font-size: 2rem;
 }
 
+/* === ОСНОВНЫЕ ИЗМЕНЕНИЯ ЗДЕСЬ === */
 .filters {
   margin-top: 1rem;
-  display: flex;
-  flex-direction: column;
-  align-items: center;
-  gap: 10px;
-  width: 100%;
-  padding: 0 1rem; /* Добавляем боковые отступы для всего блока фильтров */
-}
-
-.filter-row {
-  display: flex;
-  flex-wrap: wrap; /* Позволяем перенос на очень узких экранах */
-  justify-content: center;
-  gap: 10px;
   width: 100%;
   max-width: 500px;
+  padding: 0 1rem;
+  /* Превращаем в сетку */
+  display: grid;
+  grid-template-columns: repeat(6, 1fr); /* Создаем 6 равных колонок */
+  gap: 10px;
 }
 
-/* Медиа-запрос был удален, чтобы обеспечить одинаковое поведение */
+/* Расставляем фильтры по сетке */
+#filterYear    { grid-column: 1 / 3; } /* с 1 по 3 колонку */
+#filterMonth   { grid-column: 3 / 5; } /* с 3 по 5 колонку */
+#filterStatus  { grid-column: 5 / 7; } /* с 5 по 7 колонку */
+
+#filterPublisher   { grid-column: 1 / 4; } /* с 1 по 4 колонку */
+#filterPublication { grid-column: 4 / 7; } /* с 4 по 7 колонку */
+
+/* Правило .filter-row больше не нужно для фильтров */
+
+.action-row {
+  display: flex;
+  justify-content: space-between;
+  width: 100%;
+  max-width: 500px;
+  margin-top: 10px;
+  padding: 0 1rem;
+}
+/* === КОНЕЦ ИЗМЕНЕНИЙ === */
 
 .action-btn {
   background: rgba(255, 255, 255, 0.2);
