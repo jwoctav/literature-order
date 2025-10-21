@@ -7,7 +7,9 @@
   <link rel="stylesheet" href="style.css" />
 </head>
 <body>
-  <header>
+<header>
+  <button id="importTrigger" class="header-action-btn" type="button" title="Импорт JSON">⬆️</button>
+  <div class="header-center">
     <h1>Учёт заказа литературы</h1>
     <div class="filters">
       <div class="filter-row">
@@ -24,12 +26,12 @@
       </div>
       <div class="filter-row">
         <button id="createCard">Создать карточку</button>
-        <button id="exportJson">Экспорт JSON</button>
-        <button id="importTrigger" type="button">Импорт JSON</button>
-        <input type="file" id="importJson" accept="application/json" />
-      </div>
+        </div>
     </div>
-  </header>
+  </div>
+  <button id="exportJson" class="header-action-btn" title="Экспорт JSON">⬇️</button>
+  <input type="file" id="importJson" accept="application/json" />
+</header>
 
   <main id="cardsContainer"></main>
 
