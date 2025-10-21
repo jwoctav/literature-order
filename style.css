@@ -37,17 +37,16 @@ h1 {
 
 .filter-row {
   display: flex;
-  justify-content: center; /* ИЗМЕНЕНО: Возвращаем центрирование для мобильных */
-  gap: 10px; /* ИЗМЕНЕНО: Возвращаем отступы между элементами */
+  justify-content: center;
+  gap: 10px;
   width: 100%;
   max-width: 500px;
 }
 
-/* НОВОЕ ПРАВИЛО: Применяем выравнивание только для экранов шире 520px */
 @media (min-width: 520px) {
   .filter-row {
     justify-content: space-between;
-    gap: 0; /* Убираем фиксированный отступ, чтобы space-between работал корректно */
+    gap: 0;
   }
 }
 
@@ -94,13 +93,14 @@ button:hover { background: #0d47a1; }
   pointer-events: none;
 }
 
+/* === ИЗМЕНЕНИЯ ЗДЕСЬ === */
 #createCard {
-  background: #2e7d32;
+  background: #3498db; /* Новый светло-синий цвет */
   color: #fff;
   border: none;
 }
 #createCard:hover {
-  background: #1b5e20;
+  background: #2980b9; /* Более темный синий при наведении */
 }
 
 main {
