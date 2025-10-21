@@ -37,15 +37,18 @@ h1 {
 
 .filter-row {
   display: flex;
-  justify-content: space-between; /* ИЗМЕНЕНО ДЛЯ ВЫРАВНИВАНИЯ */
+  justify-content: center; /* ИЗМЕНЕНО: Возвращаем центрирование для мобильных */
+  gap: 10px; /* ИЗМЕНЕНО: Возвращаем отступы между элементами */
   width: 100%;
   max-width: 500px;
 }
 
-/* Правило .filter-row-split больше не нужно, удаляем его */
-
-.action-row {
-  /* Это правило наследует display: flex и justify-content: space-between от .filter-row */
+/* НОВОЕ ПРАВИЛО: Применяем выравнивание только для экранов шире 520px */
+@media (min-width: 520px) {
+  .filter-row {
+    justify-content: space-between;
+    gap: 0; /* Убираем фиксированный отступ, чтобы space-between работал корректно */
+  }
 }
 
 .action-btn {
@@ -61,7 +64,6 @@ h1 {
   background: rgba(255, 255, 255, 0.4);
 }
 
-
 select, input, button {
   padding: 6px 10px;
   font-size: 14px;
@@ -70,11 +72,9 @@ select, input, button {
   background: #fff;
 }
 
-/* Задаем ширину для select, чтобы они не были слишком узкими */
 .filter-row select {
-    flex-basis: 150px; /* Базовая ширина для каждого фильтра */
+    flex-basis: 150px;
 }
-
 
 button {
   background: #1976d2;
