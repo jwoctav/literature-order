@@ -13,13 +13,16 @@ body {
 }
 
 header {
-  background: #1565c0;
+  background: #8e44ad; /* НОВЫЙ ЦВЕТ */
   color: white;
   padding: 1rem;
   text-align: center;
 }
 
-h1 { margin: 0; font-size: 1.4rem; }
+h1 {
+  margin: 0;
+  font-size: 2rem; /* УВЕЛИЧЕННЫЙ РАЗМЕР */
+}
 
 .filters {
   margin-top: 1rem;
@@ -109,10 +112,12 @@ main {
 .card h3 {
   margin: 0;
   color: #6a1b9a;
-  overflow-wrap: anywhere;
   word-break: break-word;
-  font-size: 20px;
+  font-size: 24px; /* УВЕЛИЧЕННЫЙ РАЗМЕР */
   line-height: 1.2;
+  white-space: nowrap; /* ИЗМЕНЕНИЯ ДЛЯ ОБРАБОТКИ ДЛИННОГО ТЕКСТА */
+  overflow: hidden;
+  text-overflow: ellipsis;
 }
 
 /* Кнопка редактирования справа напротив ФИО */
