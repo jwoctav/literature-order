@@ -17,7 +17,6 @@ header {
   color: white;
   padding: 1rem;
   text-align: center;
-  /* ИЗМЕНЕНИЯ ДЛЯ ЦЕНТРИРОВАНИЯ */
   display: flex;
   flex-direction: column;
   align-items: center;
@@ -38,21 +37,17 @@ h1 {
 
 .filter-row {
   display: flex;
-  justify-content: center;
-  gap: 10px;
-  flex-wrap: wrap;
+  justify-content: space-between; /* ИЗМЕНЕНО ДЛЯ ВЫРАВНИВАНИЯ */
   width: 100%;
   max-width: 500px;
 }
 
-.filter-row-split {
-  display: grid;
-  grid-template-columns: 1fr 1fr;
-}
+/* Правило .filter-row-split больше не нужно, удаляем его */
 
 .action-row {
-  justify-content: space-between;
+  /* Это правило наследует display: flex и justify-content: space-between от .filter-row */
 }
+
 .action-btn {
   background: rgba(255, 255, 255, 0.2);
   border: 1px solid white;
@@ -74,6 +69,12 @@ select, input, button {
   border: 1px solid #ccc;
   background: #fff;
 }
+
+/* Задаем ширину для select, чтобы они не были слишком узкими */
+.filter-row select {
+    flex-basis: 150px; /* Базовая ширина для каждого фильтра */
+}
+
 
 button {
   background: #1976d2;
@@ -177,17 +178,16 @@ main {
   margin-top: 10px;
 }
 
-/* === ИЗМЕНЕНИЯ В КНОПКАХ КАРТОЧКИ === */
 .btn-delete-bottom, .btn-edit-bottom {
-  background: transparent; /* Убираем фон */
+  background: transparent;
   border: none;
-  color: #333; /* Цвет иконки */
+  color: #333;
   cursor: pointer;
-  font-size: 22px; /* Увеличиваем размер иконки */
+  font-size: 22px;
   padding: 4px;
 }
 .btn-delete-bottom:hover, .btn-edit-bottom:hover {
-  background: #f0f0f0; /* Легкий фон при наведении */
+  background: #f0f0f0;
   border-radius: 5px;
 }
 
