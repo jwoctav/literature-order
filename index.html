@@ -10,18 +10,24 @@
   <header>
     <h1>Учёт заказа литературы</h1>
     <div class="filters">
-      <select id="filterYear"><option value="all">Все годы</option></select>
-      <select id="filterMonth"><option value="all">Все месяцы</option></select>
-      <select id="filterPublication"><option value="all">Все публикации</option></select>
-      <select id="filterStatus">
-        <option value="all">Все статусы</option>
-        <option value="ожидает">ожидает</option>
-        <option value="выполнен">выполнен</option>
-      </select>
-      <button id="createCard">Создать карточку</button>
-      <button id="exportJson">Экспорт JSON</button>
-      <button id="importTrigger" type="button">Импорт JSON</button>
-      <input type="file" id="importJson" accept="application/json" />
+      <div class="filter-row">
+        <select id="filterYear"><option value="all">Год</option></select>
+        <select id="filterMonth"><option value="all">Месяц</option></select>
+        <select id="filterStatus">
+          <option value="all">Статус</option>
+          <option value="ожидает">ожидает</option>
+          <option value="выполнен">выполнен</option>
+        </select>
+      </div>
+      <div class="filter-row">
+        <select id="filterPublication"><option value="all">Публикации</option></select>
+      </div>
+      <div class="filter-row">
+        <button id="createCard">Создать карточку</button>
+        <button id="exportJson">Экспорт JSON</button>
+        <button id="importTrigger" type="button">Импорт JSON</button>
+        <input type="file" id="importJson" accept="application/json" />
+      </div>
     </div>
   </header>
 
