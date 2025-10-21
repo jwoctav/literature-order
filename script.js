@@ -34,17 +34,16 @@ let editIndex = null;
 
 importTrigger.addEventListener("click", () => importInput.click());
 
-// ===== НОВАЯ ФУНКЦИЯ ДЛЯ ЗАПОЛНЕНИЯ ФИЛЬТРА "ВОЗВЕЩАТЕЛЬ" =====
 function populatePublisherFilter() {
     const filterPublisher = document.getElementById("filterPublisher");
     const currentVal = filterPublisher.value;
     const publishers = [...new Set(cards.map(c => c.name).sort())];
 
-    filterPublisher.innerHTML = `<option value="all">Возвещатель</option>`; // Сбрасываем
+    filterPublisher.innerHTML = `<option value="all">Возвещатель</option>`;
     publishers.forEach(p => {
         filterPublisher.innerHTML += `<option value="${p}">${p}</option>`;
     });
-    filterPublisher.value = currentVal; // Восстанавливаем выбранное значение
+    filterPublisher.value = currentVal;
 }
 
 function populateSelects() {
@@ -80,7 +79,7 @@ function populateSelects() {
     ensureOption(fPub, p);
   });
   
-  populatePublisherFilter(); // Заполняем фильтр возвещателей
+  populatePublisherFilter();
 
   const now = new Date();
   const curYear = now.getFullYear();
@@ -94,11 +93,11 @@ document.getElementById("filterYear").addEventListener("change", renderCards);
 document.getElementById("filterMonth").addEventListener("change", renderCards);
 document.getElementById("filterPublication").addEventListener("change", renderCards);
 document.getElementById("filterStatus").addEventListener("change", renderCards);
-document.getElementById("filterPublisher").addEventListener("change", renderCards); // Добавляем слушатель для нового фильтра
+document.getElementById("filterPublisher").addEventListener("change", renderCards);
 
 function saveCards() {
   localStorage.setItem("cards", JSON.stringify(cards));
-  populatePublisherFilter(); // Обновляем список возвещателей после сохранения
+  populatePublisherFilter();
 }
 
 function setStatusColor(el, status) {
@@ -116,7 +115,7 @@ function renderCards() {
   const fm = document.getElementById("filterMonth").value;
   const fp = document.getElementById("filterPublication").value;
   const fs = document.getElementById("filterStatus").value;
-  const fpub = document.getElementById("filterPublisher").value; // Получаем значение нового фильтра
+  const fpub = document.getElementById("filterPublisher").value;
 
   cards
     .filter(c =>
@@ -124,17 +123,19 @@ function renderCards() {
       (fm === "all" || c.month === fm) &&
       (fp === "all" || (Array.isArray(c.publications) && c.publications.includes(fp))) &&
       (fs === "all" || c.status === fs) &&
-      (fpub === "all" || c.name === fpub) // Добавляем условие для нового фильтра
+      (fpub === "all" || c.name === fpub)
     )
     .forEach((card, i) => {
       const div = document.createElement("div");
       div.className = "card";
 
+      // --- Верх карточки (только ФИО) ---
       const header = document.createElement("div");
       header.className = "card-header";
-      header.innerHTML = `<h3>${card.name}</h3>`;
+      header.innerHTML = `<h3>${card.name}</h3>`; // Убрана кнопка редактирования отсюда
       div.appendChild(header);
 
+      // --- Блок "Месяц Год" и "Статус" ---
       const metaDiv = document.createElement("div");
       metaDiv.className = "card-meta";
       const dateP = document.createElement("p");
@@ -155,6 +156,7 @@ function renderCards() {
       metaDiv.append(dateP, statusWrapper);
       div.appendChild(metaDiv);
 
+      // --- Публикации ---
       const pubBox = document.createElement("div");
       pubBox.className = "pub-box";
       pubBox.innerHTML = `
@@ -163,6 +165,7 @@ function renderCards() {
       `;
       div.appendChild(pubBox);
 
+      // --- Нижняя панель с кнопками "Удалить" и "Редактировать" ---
       const actionsBottom = document.createElement("div");
       actionsBottom.className = "card-actions-bottom";
       actionsBottom.innerHTML = `
@@ -227,6 +230,7 @@ form.addEventListener("submit", (e) => {
   modal.classList.add("hidden");
 });
 
+// Обработчик кликов теперь ищет .btn-edit-bottom
 cardsContainer.addEventListener("click", (e) => {
   const btn = e.target.closest("button");
   if (!btn) return;
