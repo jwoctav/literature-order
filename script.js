@@ -34,6 +34,19 @@ let editIndex = null;
 
 importTrigger.addEventListener("click", () => importInput.click());
 
+// ===== НОВАЯ ФУНКЦИЯ ДЛЯ ЗАПОЛНЕНИЯ ФИЛЬТРА "ВОЗВЕЩАТЕЛЬ" =====
+function populatePublisherFilter() {
+    const filterPublisher = document.getElementById("filterPublisher");
+    const currentVal = filterPublisher.value;
+    const publishers = [...new Set(cards.map(c => c.name).sort())];
+
+    filterPublisher.innerHTML = `<option value="all">Возвещатель</option>`; // Сбрасываем
+    publishers.forEach(p => {
+        filterPublisher.innerHTML += `<option value="${p}">${p}</option>`;
+    });
+    filterPublisher.value = currentVal; // Восстанавливаем выбранное значение
+}
+
 function populateSelects() {
   const yearSel = document.getElementById("year");
   const monthSel = document.getElementById("month");
@@ -66,6 +79,8 @@ function populateSelects() {
     pubsSel.innerHTML += `<option value="${p}">${p}</option>`;
     ensureOption(fPub, p);
   });
+  
+  populatePublisherFilter(); // Заполняем фильтр возвещателей
 
   const now = new Date();
   const curYear = now.getFullYear();
@@ -75,19 +90,17 @@ function populateSelects() {
 }
 populateSelects();
 
-// ===== ДОБАВЛЕННЫЙ КОД НАЧАЛО =====
-// Слушатели для фильтров
 document.getElementById("filterYear").addEventListener("change", renderCards);
 document.getElementById("filterMonth").addEventListener("change", renderCards);
 document.getElementById("filterPublication").addEventListener("change", renderCards);
 document.getElementById("filterStatus").addEventListener("change", renderCards);
-// ===== ДОБАВЛЕННЫЙ КОД КОНЕЦ =====
+document.getElementById("filterPublisher").addEventListener("change", renderCards); // Добавляем слушатель для нового фильтра
 
 function saveCards() {
   localStorage.setItem("cards", JSON.stringify(cards));
+  populatePublisherFilter(); // Обновляем список возвещателей после сохранения
 }
 
-// ===== ФУНКЦИЯ ОКРАШИВАНИЯ СТАТУСА =====
 function setStatusColor(el, status) {
   el.classList.remove("status-ожидает", "status-выполнен");
   if (status === "ожидает") {
@@ -103,58 +116,45 @@ function renderCards() {
   const fm = document.getElementById("filterMonth").value;
   const fp = document.getElementById("filterPublication").value;
   const fs = document.getElementById("filterStatus").value;
+  const fpub = document.getElementById("filterPublisher").value; // Получаем значение нового фильтра
 
   cards
     .filter(c =>
       (fy === "all" || c.year == fy) &&
       (fm === "all" || c.month === fm) &&
       (fp === "all" || (Array.isArray(c.publications) && c.publications.includes(fp))) &&
-      (fs === "all" || c.status === fs)
+      (fs === "all" || c.status === fs) &&
+      (fpub === "all" || c.name === fpub) // Добавляем условие для нового фильтра
     )
     .forEach((card, i) => {
       const div = document.createElement("div");
       div.className = "card";
 
-      // Верх карточки
       const header = document.createElement("div");
       header.className = "card-header";
-      header.innerHTML = `
-        <h3>${card.name}</h3>
-        <button class="btn-edit-top" data-index="${i}" aria-label="Редактировать" title="Редактировать">✏️</button>
-      `;
+      header.innerHTML = `<h3>${card.name}</h3>`;
       div.appendChild(header);
 
-      // Остальные поля
-      const yearP = document.createElement("p");
-      yearP.innerHTML = `<b>Год:</b> ${card.year}`;
-
-      const monthP = document.createElement("p");
-      monthP.innerHTML = `<b>Месяц:</b> ${card.month}`;
-
-      // Выпадающий список для статуса
+      const metaDiv = document.createElement("div");
+      metaDiv.className = "card-meta";
+      const dateP = document.createElement("p");
+      dateP.textContent = `${card.month} ${card.year}`;
       const statusWrapper = document.createElement("p");
-      statusWrapper.innerHTML = `<b>Статус:</b> `;
       const statusSelect = document.createElement("select");
       statusSelect.innerHTML = `
         <option value="ожидает" ${card.status === "ожидает" ? "selected" : ""}>ожидает</option>
         <option value="выполнен" ${card.status === "выполнен" ? "selected" : ""}>выполнен</option>
       `;
       statusWrapper.appendChild(statusSelect);
-
-      // Окрашивание
       setStatusColor(statusSelect, card.status);
-
-      // Слушатель на изменение
       statusSelect.addEventListener("change", () => {
-        card.status = statusSelect.value;
+        cards[i].status = statusSelect.value;
         setStatusColor(statusSelect, card.status);
         saveCards();
       });
+      metaDiv.append(dateP, statusWrapper);
+      div.appendChild(metaDiv);
 
-      // Добавляем всё в карточку
-      div.append(yearP, monthP, statusWrapper);
-
-      // Публикации
       const pubBox = document.createElement("div");
       pubBox.className = "pub-box";
       pubBox.innerHTML = `
@@ -163,11 +163,11 @@ function renderCards() {
       `;
       div.appendChild(pubBox);
 
-      // Удаление
       const actionsBottom = document.createElement("div");
       actionsBottom.className = "card-actions-bottom";
       actionsBottom.innerHTML = `
-        <button class="btn-delete-bottom" data-index="${i}" aria-label="Удалить" title="Удалить">🗑️ Удалить</button>
+        <button class="btn-delete-bottom" data-index="${i}" aria-label="Удалить" title="Удалить">🗑️</button>
+        <button class="btn-edit-bottom" data-index="${i}" aria-label="Редактировать" title="Редактировать">✏️</button>
       `;
       div.appendChild(actionsBottom);
 
@@ -181,8 +181,6 @@ createBtn.addEventListener("click", () => {
   populateSelects();
   editIndex = null;
   modal.classList.remove("hidden");
-
-  // Цвет в форме при открытии
   const statusField = document.getElementById("status");
   setStatusColor(statusField, statusField.value);
   statusField.addEventListener("change", () => setStatusColor(statusField, statusField.value));
@@ -192,15 +190,13 @@ cancelBtn.addEventListener("click", () => modal.classList.add("hidden"));
 
 form.addEventListener("submit", (e) => {
   e.preventDefault();
-
   const pubsSel = document.getElementById("publications");
   const selectedPublications = Array.from(pubsSel.selectedOptions).map(o => o.value);
-
   const newCard = {
     year: form.year.value,
     month: form.month.value.toLowerCase(),
     name: form.name.value.trim(),
-    publications: selectedPubliclications(selectedPublications),
+    publications: selectedPublications.filter(Boolean),
     status: form.status.value.toLowerCase() === "выполнен" ? "выполнен" : "ожидает"
   };
 
@@ -231,14 +227,13 @@ form.addEventListener("submit", (e) => {
   modal.classList.add("hidden");
 });
 
-// Делегирование
 cardsContainer.addEventListener("click", (e) => {
   const btn = e.target.closest("button");
   if (!btn) return;
   const i = parseInt(btn.getAttribute("data-index") || "-1", 10);
   if (Number.isNaN(i) || i < 0) return;
 
-  if (btn.classList.contains("btn-edit-top")) {
+  if (btn.classList.contains("btn-edit-bottom")) {
     const c = cards[i];
     if (!c) return;
     modalTitle.textContent = "Редактировать карточку";
@@ -252,7 +247,6 @@ cardsContainer.addEventListener("click", (e) => {
       opt.selected = Array.isArray(c.publications) && c.publications.includes(opt.value);
     });
 
-    // Обновляем цвет в форме при редактировании
     const statusField = document.getElementById("status");
     setStatusColor(statusField, statusField.value);
     statusField.addEventListener("change", () => setStatusColor(statusField, statusField.value));
@@ -275,7 +269,6 @@ cardsContainer.addEventListener("click", (e) => {
   }
 });
 
-// Экспорт JSON
 exportBtn.addEventListener("click", () => {
   const blob = new Blob([JSON.stringify(cards, null, 2)], { type: "application/json" });
   const url = URL.createObjectURL(blob);
@@ -289,7 +282,6 @@ exportBtn.addEventListener("click", () => {
   URL.revokeObjectURL(url);
 });
 
-// Импорт JSON
 importInput.addEventListener("change", async (e) => {
   const file = e.target.files?.[0];
   if (!file) return;
@@ -320,6 +312,7 @@ importInput.addEventListener("change", async (e) => {
     document.getElementById("filterMonth").value = "all";
     document.getElementById("filterPublication").value = "all";
     document.getElementById("filterStatus").value = "all";
+    document.getElementById("filterPublisher").value = "all";
     renderCards();
     e.target.value = "";
     alert("Импорт завершён: данные обновлены.");
@@ -328,10 +321,5 @@ importInput.addEventListener("change", async (e) => {
     e.target.value = "";
   }
 });
-
-// helper
-function selectedPubliclications(list) {
-  return list.filter(Boolean);
-}
 
 renderCards();
